@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Vista de lista para reseñas -->
+        <record id="view_website_review_tree" model="ir.ui.view">
+            <field name="name">website.review.tree</field>
+            <field name="model">website.review</field>
+            <field name="arch" type="xml">
+                <list string="Reseñas del Sitio Web" decoration-success="state=='approved'" decoration-warning="state=='pending'" decoration-danger="state=='rejected'">
+                    <field name="create_date"/>
+                    <field name="customer_name"/>
+                    <field name="rating"/>
+                    <field name="title"/>
+                    <field name="state" widget="badge" decoration-success="state=='approved'" decoration-warning="state=='pending'" decoration-danger="state=='rejected'"/>
+                    <field name="website_published" widget="boolean_toggle"/>
+                    <field name="moderated_by"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Vista de formulario para reseñas - SIMPLIFICADA -->
+        <record id="view_website_review_form" model="ir.ui.view">
+            <field name="name">website.review.form</field>
+            <field name="model">website.review</field>
+            <field name="arch" type="xml">
+                <form string="Reseña del Sitio Web">
+                    <header>
+                        <button name="action_approve" type="object" string="Aprobar"
+                                class="btn-success" invisible="state != 'pending'"/>
+                        <button name="action_reject" type="object" string="Rechazar"
+                                class="btn-danger" invisible="state != 'pending'"/>
+                        <button name="action_reset_to_pending" type="object" string="Volver a Pendiente"
+                                class="btn-warning" invisible="state == 'pending'"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="rating" readonly="1"/>
+                            <field name="state" readonly="1"/>
+                        </group>
+
+                        <group string="Contenido de la Reseña">
+                            <field name="title" readonly="1"/>
+                            <field name="review_text" readonly="1"/>
+                        </group>
+
+                        <group string="Información de Moderación" invisible="state == 'pending'">
+                            <field name="moderated_by"/>
+                            <field name="moderation_date"/>
+                            <field name="website_published"/>
+                        </group>
+
+                        <group string="Razón del Rechazo" invisible="state != 'rejected'">
+                            <field name="rejection_reason"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista de búsqueda -->
+        <record id="view_website_review_search" model="ir.ui.view">
+            <field name="name">website.review.search</field>
+            <field name="model">website.review</field>
+            <field name="arch" type="xml">
+                <search string="Buscar Reseñas">
+                    <field name="customer_name"/>
+                    <field name="title"/>
+                    <field name="review_text"/>
+                    <separator/>
+                    <filter string="Pendientes" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Aprobadas" name="approved" domain="[('state', '=', 'approved')]"/>
+                    <filter string="Rechazadas" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                    <separator/>
+                    <filter string="Publicadas en Web" name="published" domain="[('website_published', '=', True)]"/>
+                    <separator/>
+                    <filter string="5 Estrellas" name="rating_5" domain="[('rating', '=', '5')]"/>
+                    <filter string="4 Estrellas" name="rating_4" domain="[('rating', '=', '4')]"/>
+                    <filter string="3 Estrellas o menos" name="rating_low" domain="[('rating', 'in', ['1', '2', '3'])]"/>
+                    <separator/>
+                    <group expand="0" string="Agrupar por">
+                        <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Calificación" name="group_rating" context="{'group_by': 'rating'}"/>
+                        <filter string="Fecha de Creación" name="group_date" context="{'group_by': 'create_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción para abrir las reseñas -->
+        <record id="action_website_reviews" model="ir.actions.act_window">
+            <field name="name">Reseñas del Sitio Web</field>
+            <field name="res_model">website.review</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_pending': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay reseñas aún
+                </p>
+                <p>
+                    Las reseñas aparecerán aquí cuando los visitantes del sitio web las envíen.
+                    Puedes aprobar o rechazar cada reseña antes de que se muestre públicamente.
+                </p>
+            </field>
+        </record>
+
+        <!-- Acción para ir a la página de reseñas del sitio web -->
+        <record id="action_goto_reviews_website" model="ir.actions.act_url">
+            <field name="name">Ver Página de Reseñas</field>
+            <field name="url">/reviews</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menú principal de la aplicación -->
+        <menuitem id="menu_website_reviews_main"
+                  name="Reseñas Vitaltecuida"
+                  web_icon="fa fa-star-o"
+                  sequence="60"/>
+
+        <!-- Submenú para gestionar reseñas -->
+        <menuitem id="menu_website_reviews_root"
+                  name="Gestionar Reseñas"
+                  parent="menu_website_reviews_main"
+                  action="action_website_reviews"
+                  sequence="10"/>
+
+        <!-- Submenú para ir al sitio web -->
+        <menuitem id="menu_website_reviews_goto_website"
+                  name="Ver Página de Reseñas"
+                  parent="menu_website_reviews_main"
+                  action="action_goto_reviews_website"
+                  sequence="20"/>
+    </data>
+</odoo>

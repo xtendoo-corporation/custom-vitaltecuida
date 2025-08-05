@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_website_review_public,website.review.public,model_website_review,base.group_public,1,0,1,0
+access_website_review_portal,website.review.portal,model_website_review,base.group_portal,1,0,1,0
+access_website_review_user,website.review.user,model_website_review,base.group_user,1,1,1,0
+access_website_review_manager,website.review.manager,model_website_review,base.group_system,1,1,1,1
+

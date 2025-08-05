@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Página principal de reseñas - versión simplificada -->
+        <template id="reviews_page" name="Reseñas - Vitaltecuida">
+            <t t-call="website.layout">
+                <div id="wrap">
+                    <div class="container mt-4">
+                        <div class="row">
+                            <div class="col-12 text-center mb-5">
+                                <h1 class="display-4 text-primary">
+                                    Reseñas de Nuestros Clientes
+                                </h1>
+                                <p class="lead">Descubre lo que dicen nuestros clientes sobre Vitaltecuida</p>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas dinámicas -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3>Calificación: <span class="text-warning"><t t-esc="average_rating or 0"/></span>/5</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h3>Total: <span class="text-dark"><t t-esc="total_reviews or 0"/></span> reseñas</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulario simple -->
+                        <div class="row mb-5">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h4>Envía tu reseña</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form action="/reviews/submit" method="post">
+                                            <div class="form-group mb-3">
+                                                <label for="customer_name">Nombre *</label>
+                                                <input type="text" class="form-control" name="customer_name" required="required"/>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="email">Email (opcional)</label>
+                                                <input type="email" class="form-control" name="email"/>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="rating">Calificación *</label>
+                                                <select class="form-control" name="rating" required="required">
+                                                    <option value="">Selecciona</option>
+                                                    <option value="5">5 Estrellas</option>
+                                                    <option value="4">4 Estrellas</option>
+                                                    <option value="3">3 Estrellas</option>
+                                                    <option value="2">2 Estrellas</option>
+                                                    <option value="1">1 Estrella</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="title">Título *</label>
+                                                <input type="text" class="form-control" name="title" required="required"/>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="review_text">Comentario *</label>
+                                                <textarea class="form-control" name="review_text" rows="3" required="required"></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Enviar Reseña</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de reseñas -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Reseñas de clientes</h2>
+
+                                <t t-if="not reviews">
+                                    <div class="alert alert-info">
+                                        <p>Aún no hay reseñas publicadas. ¡Sé el primero en compartir tu experiencia!</p>
+                                    </div>
+                                </t>
+
+                                <t t-if="reviews">
+                                    <div class="row">
+                                        <t t-foreach="reviews" t-as="review">
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="card h-100 shadow-sm">
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                                            <h5 class="card-title mb-0">
+                                                                <t t-esc="review.customer_name"/>
+                                                            </h5>
+                                                            <div class="rating text-warning">
+                                                                <t t-if="review.rating == '5'">⭐⭐⭐⭐⭐</t>
+                                                                <t t-if="review.rating == '4'">⭐⭐⭐⭐</t>
+                                                                <t t-if="review.rating == '3'">⭐⭐⭐</t>
+                                                                <t t-if="review.rating == '2'">⭐⭐</t>
+                                                                <t t-if="review.rating == '1'">⭐</t>
+                                                            </div>
+                                                        </div>
+
+                                                        <h6 class="text-dark">
+                                                            <t t-esc="review.title"/>
+                                                        </h6>
+
+                                                        <p class="card-text">
+                                                            <t t-esc="review.review_text"/>
+                                                        </p>
+                                                    </div>
+                                                    <div class="card-footer bg-light text-muted">
+                                                        <small>
+                                                            <i class="fa fa-calendar"></i>
+                                                            <t t-esc="review.create_date.strftime('%d/%m/%Y') if review.create_date else ''"/>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Página de confirmación exitosa -->
+        <template id="review_success" name="Reseña Enviada">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure">
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 text-center">
+                                <div class="card shadow-lg border-0">
+                                    <div class="card-body p-5">
+                                        <i class="fa fa-check-circle fa-4x text-success mb-4"></i>
+                                        <h1 class="text-success">¡Gracias por tu reseña!</h1>
+                                        <p class="lead">Tu experiencia es muy valiosa para nosotros.</p>
+
+                                        <div class="alert alert-info">
+                                            <h5>¿Qué pasa ahora?</h5>
+                                            <p class="mb-0">
+                                                Tu reseña será revisada por nuestro equipo antes de publicarse.
+                                                Esto nos ayuda a mantener la calidad y autenticidad de todas las opiniones.
+                                            </p>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <a href="/reviews" class="btn btn-primary btn-lg me-3">
+                                                <i class="fa fa-arrow-left"></i>
+                                                Ver Más Reseñas
+                                            </a>
+                                            <a href="/" class="btn btn-outline-primary btn-lg">
+                                                <i class="fa fa-home"></i>
+                                                Ir al Inicio
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Página de error -->
+        <template id="review_error" name="Error en Reseña">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure">
+                    <div class="container mt-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 text-center">
+                                <div class="card shadow-lg border-0">
+                                    <div class="card-body p-5">
+                                        <i class="fa fa-exclamation-triangle fa-4x text-warning mb-4"></i>
+                                        <h1 class="text-warning">Oops! Algo salió mal</h1>
+                                        <p class="lead">
+                                            <t t-esc="error_message or 'Ocurrió un error inesperado'"/>
+                                        </p>
+
+                                        <div class="mt-4">
+                                            <a href="/reviews" class="btn btn-primary btn-lg">
+                                                <i class="fa fa-arrow-left"></i>
+                                                Intentar Nuevamente
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
