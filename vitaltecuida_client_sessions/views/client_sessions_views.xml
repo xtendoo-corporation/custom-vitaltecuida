@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de Lista para Sesiones de Cliente -->
+    <record id="view_client_sessions_tree" model="ir.ui.view">
+        <field name="name">client.sessions.tree</field>
+        <field name="model">client.sessions</field>
+        <field name="arch" type="xml">
+            <list string="Sesiones de Cliente">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="observations"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista de Formulario para Sesiones de Cliente -->
+    <record id="view_client_sessions_form" model="ir.ui.view">
+        <field name="name">client.sessions.form</field>
+        <field name="model">client.sessions</field>
+        <field name="arch" type="xml">
+            <form string="Sesión de Cliente">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Nombre de la sesión"/>
+                            <field name="partner_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Observaciones" name="observations">
+                            <field name="observations" placeholder="Escribe aquí las observaciones de la sesión..."/>
+                        </page>
+                        <page string="Extras" name="extras">
+                            <field name="extras" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de Búsqueda para Sesiones de Cliente -->
+    <record id="view_client_sessions_search" model="ir.ui.view">
+        <field name="name">client.sessions.search</field>
+        <field name="model">client.sessions</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Sesiones">
+                <field name="name" string="Nombre"/>
+                <field name="partner_id" string="Cliente"/>
+                <field name="observations" string="Observaciones"/>
+                <filter string="Hoy" name="today" domain="[('date', '&gt;=', datetime.datetime.now().replace(hour=0, minute=0, second=0)), ('date', '&lt;=', datetime.datetime.now().replace(hour=23, minute=59, second=59))]"/>
+                <filter string="Esta Semana" name="this_week" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter string="Este Mes" name="this_month" domain="[('date', '&gt;=', datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0)), ('date', '&lt;=', (datetime.datetime.now().replace(day=1) + datetime.timedelta(days=31)).replace(day=1) - datetime.timedelta(days=1))]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Cliente" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Fecha" name="group_date" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acción del Menú -->
+    <record id="action_client_sessions" model="ir.actions.act_window">
+        <field name="name">Sesiones de Cliente</field>
+        <field name="res_model">client.sessions</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_client_sessions_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ¡Crea tu primera sesión de cliente!
+            </p>
+            <p>
+                Gestiona las sesiones de tus clientes de manera organizada.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú -->
+<!--    <menuitem id="menu_client_sessions_root"-->
+<!--              name="Sesiones de Cliente"-->
+<!--              sequence="10"-->
+<!--              groups="base.group_user"/>-->
+
+<!--    <menuitem id="menu_client_sessions"-->
+<!--              name="Sesiones"-->
+<!--              parent="menu_client_sessions_root"-->
+<!--              action="action_client_sessions"-->
+<!--              sequence="10"/>-->
+</odoo>
