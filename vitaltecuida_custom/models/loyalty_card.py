@@ -96,46 +96,49 @@ Contáctanos al WhatsApp o visita www.vitaltecuida.com
 
     def _send_whatsapp_message(self, partner, message):
         """
-        Método para enviar mensaje de WhatsApp usando el sistema nativo de Odoo
+        Método para enviar mensaje de WhatsApp usando la plantilla 'Vitaltecuida - Aviso Expiración Monedero' con whatsapp.composer
         """
         try:
-            # Usar la plantilla nativa de WhatsApp de Odoo
-            if 'whatsapp.template' in self.env:
-                whatsapp_template = self.env.ref('vitaltecuida_custom.whatsapp_template_ewallet_expiry', raise_if_not_found=False)
+            # Mostrar en log todos los nombres de las plantillas disponibles
+            all_templates = self.env['whatsapp.template'].search([])
+            template_names = [t.name for t in all_templates]
+            _logger.info(f"Nombres de todas las plantillas WhatsApp: {template_names}")
 
-                if whatsapp_template:
-                    # Crear el mensaje usando la plantilla nativa
-                    # Los parámetros {{1}}, {{2}}, {{3}} serán reemplazados por nombre, días, fecha
-                    partner_name = partner.name or 'Cliente'
-                    days_remaining = '15'
-                    expiration_date = ''
-
-                    # Buscar el monedero del partner para obtener la fecha exacta
-                    loyalty_card = self.search([('partner_id', '=', partner.id)], limit=1)
-                    if loyalty_card and loyalty_card.expiration_date:
-                        expiration_date = loyalty_card.expiration_date.strftime('%d/%m/%Y')
-
-                    # Aquí deberías usar el método nativo de envío de WhatsApp de Odoo
-                    # Esto depende de cómo esté configurado tu sistema de WhatsApp
-                    _logger.info(f"Usando plantilla WhatsApp nativa para {partner.mobile}")
-                    _logger.info(f"Parámetros: {partner_name}, {days_remaining}, {expiration_date}")
-                else:
-                    _logger.warning("Plantilla de WhatsApp no encontrada, usando mensaje directo")
-                    _logger.info(f"Enviando WhatsApp a {partner.mobile}: {message}")
+            # Buscar y usar solo la plantilla exacta de expiración de monedero
+            whatsapp_template = self.env['whatsapp.template'].search([
+                ('name', '=', 'Vitaltecuida - Aviso Expiración Monedero'),
+                ('model', '=', 'res.partner')
+            ], limit=1)
+            if not whatsapp_template:
+                _logger.error("No se encontró la plantilla 'Vitaltecuida - Aviso Expiración Monedero' para res.partner. Abortando envío.")
+                _logger.info(f"Enviando WhatsApp a {partner.mobile}: {message}")
             else:
-                # Fallback: registrar en log
-                _logger.info(f"WhatsApp no disponible. Mensaje para {partner.mobile}: {message}")
-
+                partner_name = partner.name or 'Cliente'
+                days_remaining = '15'
+                expiration_date = ''
+                loyalty_card = self.search([('partner_id', '=', partner.id)], limit=1)
+                if loyalty_card and loyalty_card.expiration_date:
+                    expiration_date = loyalty_card.expiration_date.strftime('%d/%m/%Y')
+                _logger.info(f"Usando plantilla WhatsApp: {whatsapp_template.name} para {partner.mobile}")
+                _logger.info(f"Parámetros: {partner_name}, {days_remaining}, {expiration_date}")
+                # Envío real con whatsapp.composer
+                composer_values = {
+                    'wa_template_id': whatsapp_template.id,
+                    'res_model': 'res.partner',
+                    'res_ids': partner.id,
+                    'phone': partner.mobile,
+                }
+                composer = self.env['whatsapp.composer'].sudo().create(composer_values)
+                _logger.info(f"Compositor WhatsApp creado con ID: {composer.id}")
+                try:
+                    composer.onchange_template_id()
+                    _logger.info("Plantilla cargada correctamente en el compositor")
+                except Exception as e:
+                    _logger.warning(f"Error al cargar la plantilla en el compositor: {e}")
+                try:
+                    result = composer.sudo().action_send_whatsapp_template()
+                    _logger.info(f"Mensaje de WhatsApp enviado: {result}")
+                except Exception as e:
+                    _logger.error(f"Error enviando mensaje de WhatsApp: {e}", exc_info=True)
         except Exception as e:
             _logger.error(f"Error en sistema WhatsApp: {str(e)}")
-
-        # Crear una actividad como respaldo independientemente del resultado
-        self.env['mail.activity'].create({
-            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
-            'summary': 'Notificación WhatsApp - Expiración de Monedero',
-            'note': f'Mensaje enviado por WhatsApp:\n\n{message}',
-            'res_id': partner.id,
-            'res_model_id': self.env['ir.model']._get('res.partner').id,
-            'user_id': self.env.user.id,
-        })
-
