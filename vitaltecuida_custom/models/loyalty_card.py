@@ -110,7 +110,7 @@ Contáctanos al WhatsApp o visita www.vitaltecuida.com
             # Buscar y usar solo la plantilla exacta de expiración de monedero
             whatsapp_template = self.env['whatsapp.template'].search([
                 ('name', '=', 'Vitaltecuida - Aviso Expiración Monedero'),
-                ('model', '=', 'res.partner')
+                ('model', '=', 'loyalty.card')
             ], limit=1)
             if not whatsapp_template:
                 _logger.error("No se encontró la plantilla 'Vitaltecuida - Aviso Expiración Monedero' para res.partner. Abortando envío.")
