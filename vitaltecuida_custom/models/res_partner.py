@@ -122,29 +122,30 @@ class ResPartner(models.Model):
             whatsapp_account = self._get_whatsapp_account()
             phone_number = partner.mobile
             template = getattr(self, 'whatsapp_template_id', False)
+            # Mostrar en log todos los nombres de las plantillas disponibles
+            all_templates = self.env['whatsapp.template'].search([])
+            template_names = [t.name for t in all_templates]
+            _logger.info(f"Nombres de todas las plantillas WhatsApp: {template_names}")
 
             # Si no hay template configurado, buscar uno predeterminado para cumpleaños
             if not template:
                 _logger.info("No hay template configurado en el partner, buscando uno predeterminado de cumpleaños")
                 # Buscar plantilla específica de cumpleaños
+                template = False
                 template_names = ['Felicitación Cumpleaños Vitaltecuida', 'Cumpleaños Vitaltecuida', 'Cumpleaños']
                 for name in template_names:
-                    template = self.env['whatsapp.template'].search([
+                    t = self.env['whatsapp.template'].search([
                         ('name', '=', name),
                         ('model', '=', 'res.partner')
                     ], limit=1)
-                    if template:
-                        _logger.info(f"Encontrada plantilla de cumpleaños por nombre: {name}")
+                    if t and 'cumplea' in t.name.lower():
+                        template = t
+                        _logger.info(f"Encontrada plantilla de cumpleaños por nombre: {t.name}")
                         break
+                # Si no se encontró ninguna plantilla válida, abortar
                 if not template:
-                    _logger.warning("No se encontraron plantillas de cumpleaños por nombre, buscando cualquier plantilla para res.partner")
-                    template = self.env['whatsapp.template'].search([
-                        ('model', '=', 'res.partner')
-                    ], limit=1)
-            if not template:
-                _logger.error("No se encontró ninguna plantilla de WhatsApp de cumpleaños para res.partner")
-                return False
-
+                    _logger.error("No se encontró ninguna plantilla de WhatsApp de cumpleaños para res.partner. Abortando envío.")
+                    return False
             _logger.info(f"Usando plantilla de cumpleaños: {template.name} [ID: {template.id}] para el partner {partner.name}")
 
             # Preparar contexto de renderizado
