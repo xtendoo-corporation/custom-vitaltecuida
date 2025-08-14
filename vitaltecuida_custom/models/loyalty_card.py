@@ -63,7 +63,7 @@ class LoyaltyCard(models.Model):
                 if message:
                     _logger.info(f"Mensaje generado para {card.partner_id.name}: {message}")
                     # Enviar mensaje de WhatsApp usando el sistema nativo de Odoo
-                    self._send_whatsapp_message(card.partner_id, message)
+                    self._send_whatsapp_message(card, message)
                     _logger.info(f"Notificación de expiración enviada a {card.partner_id.name} (ID tarjeta: {card.id})")
                 else:
                     _logger.warning(f"Error generando mensaje de notificación de expiración para {card.partner_id.name} (ID tarjeta: {card.id})")
@@ -97,7 +97,7 @@ Contáctanos al WhatsApp o visita www.vitaltecuida.com
 
         return message
 
-    def _send_whatsapp_message(self, partner, message):
+    def _send_whatsapp_message(self, card, message):
         """
         Método para enviar mensaje de WhatsApp usando la plantilla 'Vitaltecuida - Aviso Expiración Monedero' con whatsapp.composer
         """
@@ -113,26 +113,23 @@ Contáctanos al WhatsApp o visita www.vitaltecuida.com
                 ('model', '=', 'loyalty.card')
             ], limit=1)
             if not whatsapp_template:
-                _logger.error("No se encontró la plantilla 'Vitaltecuida - Aviso Expiración Monedero' para res.partner. Abortando envío.")
-                _logger.info(f"Enviando WhatsApp a {partner.mobile}: {message}")
+                _logger.error("No se encontró la plantilla 'Vitaltecuida - Aviso Expiración Monedero' para loyalty.card. Abortando envío.")
+                _logger.info(f"Enviando WhatsApp a {card.partner_id.mobile}: {message}")
             else:
-                partner_name = partner.name or 'Cliente'
+                partner_name = card.partner_id.name or 'Cliente'
                 days_remaining = '15'
-                expiration_date = ''
-                loyalty_card = self.search([('partner_id', '=', partner.id)], limit=1)
-                if loyalty_card and loyalty_card.expiration_date:
-                    expiration_date = loyalty_card.expiration_date.strftime('%d/%m/%Y')
-                _logger.info(f"Usando plantilla WhatsApp: {whatsapp_template.name} para {partner.mobile}")
+                expiration_date = card.expiration_date.strftime('%d/%m/%Y') if card.expiration_date else ''
+                _logger.info(f"Usando plantilla WhatsApp: {whatsapp_template.name} para {card.partner_id.mobile}")
                 _logger.info(f"Parámetros: {partner_name}, {days_remaining}, {expiration_date}")
                 # Envío real con whatsapp.composer
                 composer_values = {
                     'wa_template_id': whatsapp_template.id,
                     'res_model': 'loyalty.card',
-                    'res_ids': partner.id,
-                    'phone': partner.mobile,
+                    'res_ids': card.id,
+                    'phone': card.partner_id.mobile,
                 }
                 composer = self.env['whatsapp.composer'].sudo().create(composer_values)
-                _logger.info(f"Compositor WhatsApp creado con ID: {composer.id}")
+                _logger.info(f"Compositor WhatsApp creado con ID: {composer.id} para loyalty.card {card.id}")
                 try:
                     composer.onchange_template_id()
                     _logger.info("Plantilla cargada correctamente en el compositor")
