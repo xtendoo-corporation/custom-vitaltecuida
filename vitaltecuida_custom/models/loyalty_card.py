@@ -127,7 +127,7 @@ Contáctanos al WhatsApp o visita www.vitaltecuida.com
                 # Envío real con whatsapp.composer
                 composer_values = {
                     'wa_template_id': whatsapp_template.id,
-                    'res_model': 'res.partner',
+                    'res_model': 'loyalty.card',
                     'res_ids': partner.id,
                     'phone': partner.mobile,
                 }
