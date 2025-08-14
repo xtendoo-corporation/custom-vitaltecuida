@@ -175,6 +175,10 @@ class ResPartner(models.Model):
 
             # Enviar el mensaje utilizando el método nativo
             try:
+                # Validar que la plantilla contiene "cumpleaños" en el nombre
+                if 'cumplea' not in template.name.lower():
+                    _logger.error(f"La plantilla seleccionada ({template.name}) no es de cumpleaños. Abortando envío.")
+                    return False
                 result = composer.sudo().action_send_whatsapp_template()
                 _logger.info(f"Mensaje enviado: {result}")
                 self.env['mail.activity'].create({
