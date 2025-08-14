@@ -72,11 +72,11 @@ class ResPartner(models.Model):
 
     def _create_birthday_gift_card(self, partner, loyalty_program, amount):
         """
-        Crea una tarjeta regalo de cumpleaños para el partner
+        Crea una tarjeta regalo de cumpleaños para el partner en loyalty.card
         """
         try:
-            # Crear la tarjeta de lealtad con saldo
-            gift_card = self.create({
+            # Crear la tarjeta de lealtad con saldo en loyalty.card
+            gift_card = self.env['loyalty.card'].create({
                 'partner_id': partner.id,
                 'program_id': loyalty_program.id,
                 'points': amount,  # 10€ como puntos/saldo
