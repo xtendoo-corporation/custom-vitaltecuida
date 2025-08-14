@@ -56,18 +56,21 @@ class LoyaltyCard(models.Model):
 
         for card in cards_to_notify:
             try:
+                _logger.info(f"Procesando tarjeta ID: {card.id}, partner: {card.partner_id.name}, expiración: {card.expiration_date}, móvil: {card.partner_id.mobile}")
                 # Crear mensaje usando plantilla predefinida
                 message = self._format_expiry_message(card.partner_id.name, 15, card.expiration_date)
 
                 if message:
+                    _logger.info(f"Mensaje generado para {card.partner_id.name}: {message}")
                     # Enviar mensaje de WhatsApp usando el sistema nativo de Odoo
                     self._send_whatsapp_message(card.partner_id, message)
-                    _logger.info(f"Notificación de expiración enviada a {card.partner_id.name}")
+                    _logger.info(f"Notificación de expiración enviada a {card.partner_id.name} (ID tarjeta: {card.id})")
                 else:
-                    _logger.warning("Error generando mensaje de notificación de expiración")
+                    _logger.warning(f"Error generando mensaje de notificación de expiración para {card.partner_id.name} (ID tarjeta: {card.id})")
 
             except Exception as e:
-                _logger.error(f"Error enviando notificación a {card.partner_id.name}: {str(e)}")
+                _logger.error(f"Error enviando notificación a {card.partner_id.name} (ID tarjeta: {card.id}): {str(e)}")
+        _logger.info(f"Total de tarjetas procesadas para notificación de expiración: {len(cards_to_notify)}")
 
     def _format_expiry_message(self, partner_name, days_remaining, expiration_date):
         """
