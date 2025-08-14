@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_partner_form_birthdate" model="ir.ui.view">
+        <field name="name">res.partner.form.birthdate</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[2]" position="inside">
+                    <field name="birthdate"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

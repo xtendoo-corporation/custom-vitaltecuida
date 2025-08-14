@@ -21,10 +21,12 @@
         'base',
         'loyalty',
         'mail',
+        'contacts',
     ],
     'data': [
         'data/whatsapp_template_data.xml',
         'data/cron_data.xml',
+        'views/res_partner_form_view.xml',
     ],
     'installable': True,
     'auto_install': False,
