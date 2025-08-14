@@ -4,7 +4,7 @@
         <!-- Plantilla de WhatsApp nativa para notificación de expiración de monedero -->
         <record id="whatsapp_template_ewallet_expiry" model="whatsapp.template">
             <field name="name">Vitaltecuida - Aviso Expiración Monedero</field>
-            <field name="model">res.partner</field>
+            <field name="model">loyalty.card</field>
             <field name="status">approved</field>
             <field name="template_type">utility</field>
             <field name="body">🔔 *Vitaltecuida - Aviso Importante*
