@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Hereda la plantilla y fuerza el checked -->
+<t t-name="web.CalendarFilterPanel.filter" t-inherit="web.CalendarFilterPanel.filter" t-inherit-mode="extension">
+    <t t-jquery="input[type='checkbox']" t-operation="replace">
+        <input
+            type="checkbox"
+            name="selection"
+            class="o_cw_filter_input_bg form-check-input"
+            t-att-style="filter.colorIndex and typeof filter.colorIndex !== 'number' ? `border-color: ${filter.colorIndex}; background-color: ${filter.colorIndex};` : ''"
+            t-attf-id="o_calendar_filter_item_{{filterId}}"
+            checked="checked"
+            t-on-change="(ev) => this.onFilterInputChange(section, filter, ev)"
+        />
+    </t>
+</t>
+
+</templates>
+
