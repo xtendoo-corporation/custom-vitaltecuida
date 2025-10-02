@@ -1,0 +1,30 @@
+<odoo>
+    <!-- Formulario de recurso con campos de color -->
+    <record id="view_appointment_resource_form_inherit" model="ir.ui.view">
+        <field name="name">appointment.resource.form.inherit</field>
+        <field name="model">appointment.resource</field>
+        <field name="inherit_id" ref="appointment.appointment_resource_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group" position="inside">
+                <group string="Configuración de Color" col="2">
+                    <field name="color_index"/>
+                    <field name="color_preview" readonly="1" string="Vista previa del índice"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista árbol/lista de recursos con colores -->
+    <record id="view_appointment_resource_tree_inherit" model="ir.ui.view">
+        <field name="name">appointment.resource.tree.inherit</field>
+        <field name="model">appointment.resource</field>
+        <field name="inherit_id" ref="appointment.appointment_resource_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="color_index"/>
+                <field name="color_preview"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

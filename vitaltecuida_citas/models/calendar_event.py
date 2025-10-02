@@ -1,67 +1,62 @@
-
-import logging
 from odoo import models, fields, api
 
-_logger = logging.getLogger(__name__)
-
-class Meeting(models.Model):
+class CalendarEvent(models.Model):
     _inherit = 'calendar.event'
 
-    @api.onchange('resource_ids')
-    def _onchange_resource_ids(self):
-        for record in self:
-            if record.resource_ids:
-                resource_names = ", ".join(record.resource_ids.mapped("name"))
-                base_name = record.name.split(" con (")[0] if record.name else ""
-                record.name = f"{base_name} con ({resource_names})" if base_name else resource_names
+    resource_ids = fields.Many2many(
+        'appointment.resource',
+        'calendar_event_resource_rel',
+        'event_id', 'resource_id',
+        string='Resources'
+    )
+    resource_color = fields.Char(
+        string='Resource Color',
+        compute='_compute_resource_color',
+        store=True
+    )
+    resource_color_index = fields.Integer(
+        string='Resource Color Index',
+        compute='_compute_resource_color_index',
+        store=True
+    )
 
-    @api.model
-    def create(self, vals):
-        print("CREATE vals:", vals)
-        resource_ids = []
-        if 'resource_ids' in vals:
-            print("CREATE resource_ids:", vals['resource_ids'])
-            if (
-                isinstance(vals['resource_ids'], list)
-                and vals['resource_ids']
-            ):
-                if isinstance(vals['resource_ids'][0], (list, tuple)) and len(vals['resource_ids'][0]) > 2 and vals['resource_ids'][0][0] == 6:
-                    resource_ids = vals['resource_ids'][0][2]
-                elif isinstance(vals['resource_ids'][0], (list, tuple)) and vals['resource_ids'][0][0] == 4:
-                    resource_ids = [cmd[1] for cmd in vals['resource_ids'] if cmd[0] == 4]
-                elif isinstance(vals['resource_ids'][0], int):
-                    resource_ids = vals['resource_ids']
-        print("CREATE resource_ids final:", resource_ids)
-        # Asegura que el nombre nunca sea False o vacío
-        if not vals.get('name'):
-            if resource_ids:
-                resource_names = ", ".join(self.env['resource.resource'].browse(resource_ids).mapped('name'))
-                vals['name'] = resource_names
+    @api.depends('resource_ids', 'resource_ids.color')
+    def _compute_resource_color(self):
+        for event in self:
+            # Toma el color hexadecimal del primer recurso asignado
+            if event.resource_ids and event.resource_ids[0].color:
+                event.resource_color = event.resource_ids[0].color
             else:
-                vals['name'] = 'Sin título'
-        return super().create(vals)
+                event.resource_color = '#c7c7c7'
+
+    @api.depends('resource_ids', 'resource_ids.color_index')
+    def _compute_resource_color_index(self):
+        for event in self:
+            if event.resource_ids and event.resource_ids[0].color_index:
+                event.resource_color_index = event.resource_ids[0].color_index
+            else:
+                # Asignar un color por defecto que no sea 0 (gris)
+                event.resource_color_index = 1  # Rojo por defecto
 
     def write(self, vals):
-        print("WRITE vals:", vals)
-        resource_ids = []
+        """Recalcula colores cuando se modifican los recursos"""
+        result = super().write(vals)
         if 'resource_ids' in vals:
-            print("WRITE resource_ids:", vals['resource_ids'])
-            if (
-                isinstance(vals['resource_ids'], list)
-                and vals['resource_ids']
-            ):
-                if isinstance(vals['resource_ids'][0], (list, tuple)) and len(vals['resource_ids'][0]) > 2 and vals['resource_ids'][0][0] == 6:
-                    resource_ids = vals['resource_ids'][0][2]
-                elif isinstance(vals['resource_ids'][0], (list, tuple)) and vals['resource_ids'][0][0] == 4:
-                    resource_ids = [cmd[1] for cmd in vals['resource_ids'] if cmd[0] == 4]
-                elif isinstance(vals['resource_ids'][0], int):
-                    resource_ids = vals['resource_ids']
-        print("WRITE resource_ids final:", resource_ids)
-        # Asegura que el nombre nunca sea False o vacío
-        if not vals.get('name'):
-            if resource_ids:
-                resource_names = ", ".join(self.env['resource.resource'].browse(resource_ids).mapped('name'))
-                vals['name'] = resource_names
-            else:
-                vals['name'] = 'Sin título'
-        return super().write(vals)
+            self._compute_resource_color_index()
+            self._compute_resource_color()
+        return result
+
+    @api.model
+    def _ensure_resource_colors(self):
+        """Método para asegurar que todos los recursos tengan colores"""
+        resources = self.env['appointment.resource'].search([])
+        color_index = 1
+        for resource in resources:
+            if not resource.color_index:
+                resource.color_index = color_index
+                color_index = (color_index % 11) + 1  # Ciclar entre 1-11
+            if not resource.color:
+                # Colores hexadecimales por defecto
+                colors = ['#ff0000', '#ff8800', '#ffff00', '#88ff00', '#00ff00',
+                         '#00ff88', '#0088ff', '#0000ff', '#8800ff', '#ff00ff', '#ff0088']
+                resource.color = colors[(resource.color_index - 1) % len(colors)]

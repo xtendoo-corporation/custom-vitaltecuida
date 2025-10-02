@@ -9,18 +9,16 @@
     'version': '18.0.1.0.0',
     'depends': ['appointment', 'hr', 'calendar'],
     'data': [
-        "views/view_calendar_event_form_quick_inherit.xml",
+        'views/appointment_resource_views.xml',
+        'views/appointment_resource_calendar.xml',
     ],
-    # 'assets': {
-    #     'web.assets_backend': [
-    #         'vitaltecuida_citas/static/src/js/attendee_calendar_patch.js',
-    #     ],
-    # },
-    # 'qweb': [
-    #     'static/src/views/attendee_calendar_common_renderer_inherit.xml',
-    # ],
+    'assets': {
+        'web.assets_backend_lazy': [
+            # 'vitaltecuida_citas/static/src/js/appointment_booking_gantt_renderer.js',
+            # 'vitaltecuida_citas/static/src/css/appointment_booking_gantt.css',
+        ],
+    },
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
 }
-

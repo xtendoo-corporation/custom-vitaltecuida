@@ -1,0 +1,33 @@
+<odoo>
+    <!-- Vista calendario con colores de recursos -->
+    <record id="view_calendar_event_simple" model="ir.ui.view">
+        <field name="name">Resource Calendar View</field>
+        <field name="model">calendar.event</field>
+        <field name="arch" type="xml">
+            <calendar string="Resource Bookings"
+                      color="resource_color_index"
+                      date_start="start"
+                      date_stop="stop"
+                      mode="week">
+                <field name="name"/>
+                <field name="resource_ids"/>
+                <field name="resource_color_index" invisible="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Acción para abrir la vista calendario -->
+    <record id="action_calendar_event_resource" model="ir.actions.act_window">
+        <field name="name">Resource Bookings</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">calendar,form</field>
+        <field name="view_id" ref="view_calendar_event_simple"/>
+    </record>
+
+    <!-- Menú dentro del módulo de Citas -->
+    <menuitem id="menu_resource_bookings"
+              name="Resource Calendar"
+              parent="appointment.menu_appointment_schedule_resources"
+              action="action_calendar_event_resource"
+              sequence="15"/>
+</odoo>
