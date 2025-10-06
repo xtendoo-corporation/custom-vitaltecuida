@@ -19,33 +19,18 @@ class ResPartner(models.Model):
             ])
             partner.sign_request_count = count
 
-    def action_view_sign_requests(self):
-        """Open the list of sign requests for this partner"""
+
+    def action_view_sign_templates(self):
+        """Open the list of all sign templates"""
         self.ensure_one()
 
-        # Get all sign request items for this partner
-        sign_items = self.env['sign.request.item'].search([
-            ('partner_id', '=', self.id)
-        ])
-
-        # Get the unique sign requests
-        sign_request_ids = sign_items.mapped('sign_request_id').ids
-
-        action = {
-            'name': f'Documentos Firmados - {self.name}',
+        return {
+            'name': 'Plantillas de Firma',
             'type': 'ir.actions.act_window',
-            'res_model': 'sign.request',
-            'view_mode': 'list,form',
-            'domain': [('id', 'in', sign_request_ids)],
+            'res_model': 'sign.template',
+            'view_mode': 'kanban,list,form',
             'context': {
-                'default_partner_id': self.id,
-            }
+                'create': True,
+            },
+            'target': 'current',
         }
-
-        if len(sign_request_ids) == 1:
-            action.update({
-                'view_mode': 'form',
-                'res_id': sign_request_ids[0],
-            })
-
-        return action
