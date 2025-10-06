@@ -19,18 +19,17 @@ class ResPartner(models.Model):
             ])
             partner.sign_request_count = count
 
-
     def action_view_sign_templates(self):
-        """Open the list of all sign templates"""
+        """Open wizard to select a sign template and sign with this partner"""
         self.ensure_one()
 
         return {
-            'name': 'Plantillas de Firma',
+            'name': 'Seleccionar Plantilla de Firma',
             'type': 'ir.actions.act_window',
-            'res_model': 'sign.template',
-            'view_mode': 'kanban,list,form',
+            'res_model': 'sign.template.wizard',
+            'view_mode': 'form',
             'context': {
-                'create': True,
+                'default_partner_id': self.id,
             },
-            'target': 'current',
+            'target': 'new',
         }

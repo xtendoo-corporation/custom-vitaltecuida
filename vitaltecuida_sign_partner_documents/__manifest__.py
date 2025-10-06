@@ -16,10 +16,11 @@
         'sign',
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'views/sign_template_wizard_views.xml',
         'views/res_partner_views.xml',
     ],
     'installable': True,
     'auto_install': False,
     'application': False,
 }
-
