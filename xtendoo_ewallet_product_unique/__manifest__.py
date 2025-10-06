@@ -9,7 +9,7 @@
         monedero electrónico (ewallet). Incluye validaciones y filtrado de
         monederos activos en el punto de venta.
     """,
-    'author': 'Xtendoo',
+    'author': 'Abraham (Xtendoo)',
     'website': 'https://www.xtendoo.es',
     'license': 'AGPL-3',
     'depends': [

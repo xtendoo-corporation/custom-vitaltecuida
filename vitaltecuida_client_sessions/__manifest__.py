@@ -11,7 +11,7 @@
         * Modelo de sesiones con campos: nombre, fecha, observaciones y extras
         * Vistas de lista y formulario para gestionar sesiones
     """,
-    'author': 'Vitaltecuida',
+    'author': 'Abraham (Xtendoo)',
     'website': '',
     'depends': ['base', 'contacts'],
     'data': [

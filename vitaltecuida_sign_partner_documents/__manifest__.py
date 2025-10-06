@@ -7,7 +7,7 @@
         This module adds a smart button in the partner form view to show
         all sign requests where the partner is involved as a signer.
     """,
-    'author': 'Vitaltecuida',
+    'author': 'Abraham (Xtendoo)',
     'website': 'https://www.vitaltecuida.com',
     'license': 'AGPL-3',
     'depends': [

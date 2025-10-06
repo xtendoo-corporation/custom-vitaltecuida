@@ -14,7 +14,7 @@
         - Integración con el menú principal del sitio web
         - Diseño responsive y moderno
     """,
-    'author': 'Vitaltecuida',
+    'author': 'Abraham (Xtendoo)',
     'website': 'https://www.vitaltecuida.com',
     'license': 'AGPL-3',
     'depends': [

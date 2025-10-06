@@ -14,7 +14,7 @@
         - Integración con el sistema nativo de WhatsApp de Odoo
         - Específico para Vitaltecuida
     """,
-    'author': 'Vitaltecuida',
+    'author': 'Abraham (Xtendoo)',
     'website': 'https://www.vitaltecuida.com',
     'license': 'AGPL-3',
     'depends': [
