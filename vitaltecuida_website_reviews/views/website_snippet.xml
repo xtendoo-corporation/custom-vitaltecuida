@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="basic_snippet_template" name="Reviews">
+        <section class="container py-5">
+            <!-- CSS para flechas del carrusel, siempre visible y seguro para el editor -->
+            <style type="text/css">
+                #reviewsCarousel .carousel-control-prev-icon,
+                #reviewsCarousel .carousel-control-next-icon {
+                    filter: none !important;
+                    background-color: rgba(255,255,255,0.85) !important;
+                    border-radius: 50% !important;
+                    width: 3rem !important;
+                    height: 3rem !important;
+                    background-size: 60% 60% !important;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+                    border: 1px solid #222 !important;
+                    display: inline-block !important;
+                }
+                #reviewsCarousel .carousel-control-prev-icon {
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" viewBox="0 0 16 16"><path d="M11.354 1.646a.5.5 0 0 1 0 .708L6.707 8l4.647 5.646a.5.5 0 0 1-.708.708l-5-6a.5.5 0 0 1 0-.708l5-6a.5.5 0 0 1 .708 0z"/></svg>') !important;
+                }
+                #reviewsCarousel .carousel-control-next-icon {
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" viewBox="0 0 16 16"><path d="M4.646 1.646a.5.5 0 0 1 .708 0l5 6a.5.5 0 0 1 0 .708l-5 6a.5.5 0 0 1-.708-.708L9.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>') !important;
+                }
+                #reviewsCarousel .carousel-control-prev,
+                #reviewsCarousel .carousel-control-next {
+                    width: 5% !important;
+                }
+            </style>
+            <div id="reviewsCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 1</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 1. Excelente servicio y atención.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 2</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 2. Muy recomendable, repetiré.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 3</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 3. Trato profesional y rápido.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 4</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 4. Muy satisfecho con el resultado.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 5</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 5. Atención personalizada y rápida.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 6</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 6. Muy recomendable.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 7</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 7. Todo perfecto.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 8</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 8. Muy buena experiencia.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow h-100 border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <span class="fw-bold">Nombre Cliente 9</span>
+                                        </div>
+                                        <p class="card-text fst-italic">“Reseña de Google del cliente 9. Volveré sin duda.”</p>
+                                        <div class="text-warning">★★★★★</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" ></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#reviewsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" ></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
+            </div>
+        </section>
+    </template>
+
+    <template id="basic_snippet_banner" inherit_id="website.snippets"
+              name="Snippet banner">
+        <xpath expr="//snippets[@id='snippet_groups']"
+               position="inside">
+            <t t-snippet="vitaltecuida_website_reviews.basic_snippet_template"
+               t-thumbnail="/basic_snippet/static/src/images/snippets/banner.jpg"/>
+        </xpath>
+    </template>
+</odoo>
