@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Form view for Sign Template Wizard (No Email) -->
+        <record id="view_sign_template_wizard_no_email_form" model="ir.ui.view">
+            <field name="name">sign.template.wizard.no.email.form</field>
+            <field name="model">sign.template.wizard.no.email</field>
+            <field name="arch" type="xml">
+                <form string="Seleccionar Plantilla de Firma (Sin Email)">
+                    <group>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="sign_template_id"
+                               options="{'no_create': True, 'no_open': True}"
+                               domain="[('active', '=', True)]"/>
+                    </group>
+                    <footer>
+                        <button string="Firmar Ahora"
+                                name="action_sign_now"
+                                type="object"
+                                class="btn-primary"/>
+                        <button string="Cancelar"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

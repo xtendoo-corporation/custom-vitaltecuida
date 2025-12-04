@@ -18,6 +18,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/sign_template_wizard_views.xml',
+        'views/sign_template_wizard_no_email_views.xml',
         'views/res_partner_views.xml',
     ],
     'installable': True,

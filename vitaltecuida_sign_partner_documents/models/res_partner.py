@@ -33,3 +33,19 @@ class ResPartner(models.Model):
             },
             'target': 'new',
         }
+
+    def action_view_sign_templates_no_email(self):
+        """Open wizard to select a sign template and sign with this partner (without email requirement)"""
+        self.ensure_one()
+
+        return {
+            'name': 'Seleccionar Plantilla de Firma (Sin Email)',
+            'type': 'ir.actions.act_window',
+            'res_model': 'sign.template.wizard.no.email',
+            'view_mode': 'form',
+            'context': {
+                'default_partner_id': self.id,
+            },
+            'target': 'new',
+        }
+

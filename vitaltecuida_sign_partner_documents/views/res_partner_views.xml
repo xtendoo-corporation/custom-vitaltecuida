@@ -12,7 +12,14 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-file-text-o"
-                        string="Plantillas de Firma"/>
+                        string="Plantillas de Firma"
+                        invisible="not email"/>
+                <button name="action_view_sign_templates_no_email"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        string="Plantillas de Firma"
+                        invisible="email"/>
             </div>
         </field>
     </record>
