@@ -12,6 +12,7 @@
         - Compatible con el sistema de loyalty cards de Odoo
         - Notificaciones por WhatsApp 15 días antes de la expiración
         - Integración con el sistema nativo de WhatsApp de Odoo
+        - Popup personalizado para tarjetas regalo con precio auto-rellenado
         - Específico para Vitaltecuida
     """,
     'author': 'Abraham (Xtendoo)',
@@ -22,12 +23,20 @@
         'loyalty',
         'mail',
         'contacts',
+        'pos_loyalty',
     ],
     'data': [
         'data/whatsapp_template_data.xml',
         'data/cron_data.xml',
         'views/res_partner_form_view.xml',
     ],
+    'assets': {
+        'point_of_sale._assets_pos': [
+            'vitaltecuida_custom/static/src/js/manage_giftcard_popup.js',
+            'vitaltecuida_custom/static/src/js/order_summary.js',
+            'vitaltecuida_custom/static/src/xml/manage_giftcard_popup.xml',
+        ],
+    },
     'installable': True,
     'auto_install': False,
     'application': False,
