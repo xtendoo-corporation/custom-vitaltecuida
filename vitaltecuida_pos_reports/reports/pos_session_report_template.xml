@@ -155,28 +155,31 @@
                                     </table>
                                 </div>
 
-                                <!-- Detalle de pedidos (solo si es informe detallado) -->
-                                <t t-if="data['report_type'] == 'detailed'">
-                                    <h5 class="mt-3 mb-2">Detalle de Pedidos</h5>
-                                    <t t-foreach="session_data['orders']" t-as="order">
-                                        <div class="mb-4 border-top pt-3 order-block">
-                                            <!-- Cabecera del pedido -->
-                                            <div class="row mb-2">
-                                                <div class="col-8">
-                                                    <strong>Pedido:</strong> <span t-out="order['name']"/>
-                                                    <t t-if="order['pos_reference']">
-                                                        (<span t-out="order['pos_reference']"/>)
-                                                    </t>
-                                                    <br/>
-                                                    <strong>Cliente:</strong> <span t-out="order['partner']"/>
-                                                </div>
-                                                <div class="col-4 text-right">
-                                                    <strong>Fecha:</strong> <span t-out="order['date_order']" t-options="{'widget': 'datetime'}"/><br/>
-                                                    <strong>Cajero:</strong> <span t-out="order['user']"/>
-                                                </div>
+                                <!-- Detalle de pedidos -->
+                                <h5 class="mt-3 mb-2">
+                                    <t t-if="data['report_type'] == 'detailed'">Detalle de Pedidos</t>
+                                    <t t-if="data['report_type'] == 'summary'">Resumen de Pedidos</t>
+                                </h5>
+                                <t t-foreach="session_data['orders']" t-as="order">
+                                    <div class="mb-4 border-top pt-3 order-block">
+                                        <!-- Cabecera del pedido -->
+                                        <div class="row mb-2">
+                                            <div class="col-8">
+                                                <strong>Pedido:</strong> <span t-out="order['name']"/>
+                                                <t t-if="order['pos_reference']">
+                                                    (<span t-out="order['pos_reference']"/>)
+                                                </t>
+                                                <br/>
+                                                <strong>Cliente:</strong> <span t-out="order['partner']"/>
                                             </div>
+                                            <div class="col-4 text-right">
+                                                <strong>Fecha:</strong> <span t-out="order['date_order']" t-options="{'widget': 'datetime'}"/><br/>
+                                                <strong>Cajero:</strong> <span t-out="order['user']"/>
+                                            </div>
+                                        </div>
 
-                                            <!-- Líneas del pedido -->
+                                        <!-- Líneas del pedido (solo en modo detallado) -->
+                                        <t t-if="data['report_type'] == 'detailed'">
                                             <table class="table table-sm">
                                                 <thead class="table-light">
                                                     <tr>
@@ -231,23 +234,47 @@
                                                     </tr>
                                                 </tfoot>
                                             </table>
+                                        </t>
 
-                                            <!-- Pagos del pedido -->
-                                            <div class="mb-2">
-                                                <strong>Métodos de Pago:</strong>
-                                                <table class="table table-sm table-bordered" style="width: 40%;">
-                                                    <tbody>
-                                                        <tr t-foreach="order['payments']" t-as="payment">
-                                                            <td><span t-out="payment['method']"/></td>
-                                                            <td class="text-right">
-                                                                <span t-out="payment['amount']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                        <!-- Totales del pedido (en modo resumen) -->
+                                        <t t-if="data['report_type'] == 'summary'">
+                                            <table class="table table-sm table-bordered" style="width: 50%;">
+                                                <tr>
+                                                    <th>Subtotal:</th>
+                                                    <td class="text-right">
+                                                        <span t-out="order['amount_subtotal']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Impuestos:</th>
+                                                    <td class="text-right">
+                                                        <span t-out="order['amount_tax']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
+                                                    </td>
+                                                </tr>
+                                                <tr class="table-info">
+                                                    <th>Total:</th>
+                                                    <th class="text-right">
+                                                        <span t-out="order['amount_total']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
+                                                    </th>
+                                                </tr>
+                                            </table>
+                                        </t>
+
+                                        <!-- Pagos del pedido -->
+                                        <div class="mb-2">
+                                            <strong>Métodos de Pago:</strong>
+                                            <table class="table table-sm table-bordered" style="width: 40%;">
+                                                <tbody>
+                                                    <tr t-foreach="order['payments']" t-as="payment">
+                                                        <td><span t-out="payment['method']"/></td>
+                                                        <td class="text-right">
+                                                            <span t-out="payment['amount']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </t>
+                                    </div>
                                 </t>
 
                                 <!-- Resumen de pagos de la sesión -->
