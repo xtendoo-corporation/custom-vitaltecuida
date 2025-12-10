@@ -6,6 +6,30 @@
                 <t t-set="data" t-value="o._get_report_data()"/>
                 <t t-call="web.external_layout">
                     <div class="page">
+                        <!-- Estilos para mejorar saltos de página -->
+                        <style>
+                            .order-block {
+                                page-break-inside: avoid;
+                                break-inside: avoid;
+                            }
+                            .session-section {
+                                page-break-inside: avoid;
+                            }
+                            table {
+                                page-break-inside: auto;
+                            }
+                            tr {
+                                page-break-inside: avoid;
+                                page-break-after: auto;
+                            }
+                            thead {
+                                display: table-header-group;
+                            }
+                            tfoot {
+                                display: table-footer-group;
+                            }
+                        </style>
+
                         <!-- Encabezado del informe -->
                         <div class="text-center mb-4">
                             <h2>Informe Detallado de Sesiones POS</h2>
@@ -135,7 +159,7 @@
                                 <t t-if="data['report_type'] == 'detailed'">
                                     <h5 class="mt-3 mb-2">Detalle de Pedidos</h5>
                                     <t t-foreach="session_data['orders']" t-as="order">
-                                        <div class="mb-4 border-top pt-3">
+                                        <div class="mb-4 border-top pt-3 order-block">
                                             <!-- Cabecera del pedido -->
                                             <div class="row mb-2">
                                                 <div class="col-8">
