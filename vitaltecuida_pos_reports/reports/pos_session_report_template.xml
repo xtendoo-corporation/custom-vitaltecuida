@@ -28,6 +28,18 @@
                             tfoot {
                                 display: table-footer-group;
                             }
+                            /* Alineación automática de valores numéricos */
+                            .text-right,
+                            td.text-right,
+                            th.text-right {
+                                text-align: right !important;
+                            }
+                            /* Asegurar que los spans con valores monetarios se alineen */
+                            td.text-right span,
+                            th.text-right span {
+                                display: inline-block;
+                                text-align: right;
+                            }
                         </style>
 
                         <!-- Encabezado del informe -->
@@ -51,19 +63,19 @@
                             <table class="table table-sm table-bordered">
                                 <tr>
                                     <th>Total de Sesiones:</th>
-                                    <td><span t-out="len(data['sessions_data'])"/></td>
+                                    <td class="text-right"><span t-out="len(data['sessions_data'])"/></td>
                                     <th>Total de Pedidos:</th>
-                                    <td><span t-out="data['grand_total_orders']"/></td>
+                                    <td class="text-right"><span t-out="data['grand_total_orders']"/></td>
                                 </tr>
                                 <tr>
                                     <th>Total Base Imponible:</th>
-                                    <td><span t-out="data['grand_total'] - data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></td>
+                                    <td class="text-right"><span t-out="data['grand_total'] - data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></td>
                                     <th>Total Impuestos:</th>
-                                    <td><span t-out="data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></td>
+                                    <td class="text-right"><span t-out="data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></td>
                                 </tr>
                                 <tr>
                                     <th colspan="3" class="text-right">Total General:</th>
-                                    <th><span t-out="data['grand_total']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></th>
+                                    <th class="text-right"><span t-out="data['grand_total']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/></th>
                                 </tr>
                             </table>
                         </div>
@@ -134,25 +146,9 @@
                                             <t t-if="session_data['session'].stop_at">
                                                 <strong>Fecha Cierre:</strong> <span t-out="session_data['session'].stop_at" t-options="{'widget': 'datetime'}"/><br/>
                                             </t>
-                                            <strong>Total Pedidos:</strong> <span t-out="session_data['total_orders']"/>
+                                            <strong>Total Pedidos:</strong> <span t-out="session_data['total_orders']" class="text-right"/>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Resumen de la sesión -->
-                                <div class="mb-3">
-                                    <table class="table table-sm table-bordered">
-                                        <tr class="table-info">
-                                            <th>Total Sesión:</th>
-                                            <th class="text-right">
-                                                <span t-out="session_data['total_amount']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
-                                            </th>
-                                            <th>Impuestos:</th>
-                                            <th class="text-right">
-                                                <span t-out="session_data['total_tax']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
-                                            </th>
-                                        </tr>
-                                    </table>
                                 </div>
 
                                 <!-- Detalle de pedidos -->
@@ -270,14 +266,11 @@
                                             <tr t-foreach="session_data['orders']" t-as="order">
                                                 <td>
                                                     <span t-out="order['name']"/>
-                                                    <t t-if="order['pos_reference']">
-                                                        <br/><small class="text-muted"><span t-out="order['pos_reference']"/></small>
-                                                    </t>
                                                 </td>
                                                 <td><span t-out="order['date_order']" t-options="{'widget': 'datetime'}"/></td>
                                                 <td><span t-out="order['partner']"/></td>
-                                                <td class="text-right">
-                                                    <strong>
+                                                <td class="text-right" style="text-align: right;">
+                                                    <strong style="display: inline-block; text-align: right;">
                                                         <span t-out="order['amount_total']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
                                                     </strong>
                                                 </td>
@@ -285,28 +278,17 @@
                                         </tbody>
                                     </table>
 
+                                    <!-- Total Sesión fuera de la tabla para que aparezca solo una vez -->
+                                    <table class="table table-sm table-bordered" style="width: 100%; page-break-inside: avoid;">
+                                        <tr class="table-info">
+                                            <th colspan="3" class="text-right" style="width: 75%;">Total Sesión:</th>
+                                            <th class="text-right" style="width: 25%;">
+                                                <span t-out="session_data['total_amount']" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
+                                            </th>
+                                        </tr>
+                                    </table>
                                 </t>
 
-                                <!-- Resumen de pagos de la sesión -->
-                                <div class="mt-3">
-                                    <h5>Resumen de Pagos - Sesión</h5>
-                                    <table class="table table-sm table-bordered" style="width: 50%;">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Método de Pago</th>
-                                                <th class="text-right">Importe</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr t-foreach="session_data['payment_summary'].items()" t-as="payment">
-                                                <td><span t-out="payment[0]"/></td>
-                                                <td class="text-right">
-                                                    <span t-out="payment[1]" t-options="{'widget': 'monetary', 'display_currency': session_data['session'].currency_id}"/>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         </t>
                     </div>
