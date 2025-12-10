@@ -8,15 +8,17 @@ import { VitaltecuidaManageGiftCardPopup } from "@vitaltecuida_custom/js/manage_
 patch(OrderSummary.prototype, {
     /**
      * Busca el siguiente código de tarjeta regalo disponible
-     * Formato: 000000001, 000000002, etc.
+     * Formato: 0001-9999 (numérico), luego 0001a, 0002a, ..., 9999a, 0001b, etc.
      * Verifica en la base de datos cuáles ya existen
      */
     async _getNextAvailableGiftCardCode() {
-        let nextCode = 1;
+        let nextNumber = 1;
+        let currentSuffix = '';
         let found = false;
 
         while (!found) {
-            const codeStr = String(nextCode).padStart(9, '0');
+            // Generar el código: 4 dígitos + sufijo opcional
+            const codeStr = String(nextNumber).padStart(4, '0') + currentSuffix;
 
             // Buscar si existe una tarjeta con este código en la base de datos
             const existingCards = await this.pos.data.searchRead(
@@ -32,18 +34,58 @@ patch(OrderSummary.prototype, {
 
             if (existingCards.length === 0 && !pendingInOrder) {
                 found = true;
-            } else {
-                nextCode++;
+                return codeStr;
             }
 
-            // Límite de seguridad para evitar bucle infinito
-            if (nextCode > 999999999) {
+            // Avanzar al siguiente código
+            nextNumber++;
+
+            // Si se llega a 10000, volver a 1 y añadir/incrementar sufijo
+            if (nextNumber > 9999) {
+                nextNumber = 1;
+
+                if (currentSuffix === '') {
+                    // Primera vez que se agota: empezar con 'a'
+                    currentSuffix = 'a';
+                } else {
+                    // Incrementar la letra (a -> b -> c ... -> z -> aa -> ab...)
+                    currentSuffix = this._incrementSuffix(currentSuffix);
+                }
+            }
+
+            // Límite de seguridad para evitar bucle infinito (zzz sería más de 17 millones de códigos)
+            if (currentSuffix.length > 3) {
                 console.error("Se alcanzó el límite máximo de códigos de tarjeta regalo");
                 break;
             }
         }
 
-        return String(nextCode).padStart(9, '0');
+        return String(nextNumber).padStart(4, '0') + currentSuffix;
+    },
+
+    /**
+     * Incrementa el sufijo alfabético
+     * a -> b -> c ... -> z -> aa -> ab ... -> az -> ba -> ... -> zz -> aaa ...
+     */
+    _incrementSuffix(suffix) {
+        const chars = suffix.split('');
+        let carry = true;
+
+        for (let i = chars.length - 1; i >= 0 && carry; i--) {
+            if (chars[i] === 'z') {
+                chars[i] = 'a';
+            } else {
+                chars[i] = String.fromCharCode(chars[i].charCodeAt(0) + 1);
+                carry = false;
+            }
+        }
+
+        // Si todavía hay carry, añadir una 'a' al inicio
+        if (carry) {
+            chars.unshift('a');
+        }
+
+        return chars.join('');
     },
 
     /**
