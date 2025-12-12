@@ -9,15 +9,11 @@
     'version': '18.0.1.0.0',
     'depends': ['appointment', 'hr', 'calendar'],
     'data': [
+        'security/ir.model.access.csv',
         'views/appointment_resource_views.xml',
+        'views/calendar_event_wizard_views.xml',
         'views/appointment_resource_calendar.xml',
     ],
-    'assets': {
-        'web.assets_backend_lazy': [
-            # 'vitaltecuida_citas/static/src/js/appointment_booking_gantt_renderer.js',
-            # 'vitaltecuida_citas/static/src/css/appointment_booking_gantt.css',
-        ],
-    },
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
