@@ -13,7 +13,7 @@
     'depends': [
         'base',
         'contacts',
-        'sign',
+        'sign_oca',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -24,4 +24,9 @@
     'installable': True,
     'auto_install': False,
     'application': False,
+    'assets': {
+        'web.assets_frontend': [
+            'vitaltecuida_sign_partner_documents/static/src/js/sign_oca_override.js',
+        ],
+    },
 }

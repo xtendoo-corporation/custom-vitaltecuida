@@ -1,3 +1,4 @@
+# pylint: disable=import-error, no-name-in-module
 from odoo import models, fields, api
 
 
@@ -13,8 +14,8 @@ class ResPartner(models.Model):
     def _compute_sign_request_count(self):
         """Compute the number of sign requests where this partner is involved"""
         for partner in self:
-            # Count sign request items where this partner is the signer
-            count = self.env['sign.request.item'].search_count([
+            # Count sign oca request signers where this partner is the signer
+            count = self.env['sign.oca.request.signer'].search_count([
                 ('partner_id', '=', partner.id)
             ])
             partner.sign_request_count = count
@@ -48,4 +49,3 @@ class ResPartner(models.Model):
             },
             'target': 'new',
         }
-

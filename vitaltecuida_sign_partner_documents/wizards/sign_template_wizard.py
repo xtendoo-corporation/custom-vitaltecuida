@@ -1,5 +1,9 @@
+# pylint: disable=import-error, no-name-in-module
 from odoo import models, fields, api, _, Command
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class SignTemplateWizard(models.TransientModel):
@@ -15,57 +19,51 @@ class SignTemplateWizard(models.TransientModel):
     )
 
     sign_template_id = fields.Many2one(
-        'sign.template',
+        'sign.oca.template',
         string='Plantilla de Firma',
         required=True,
         help='Seleccione la plantilla de firma a utilizar'
     )
 
     def action_sign_now(self):
-        """Execute sign now action with the selected template and partner"""
         self.ensure_one()
-
+        _logger.warning('INICIO action_sign_now')
         if not self.sign_template_id:
+            _logger.error('No se seleccionó plantilla de firma')
             raise UserError(_('Debe seleccionar una plantilla de firma.'))
-
         sign_template = self.sign_template_id
-
-        # Get roles from template
-        roles = sign_template.sign_item_ids.responsible_id.sorted()
-
-        # Prepare signers list
-        signers = []
-        if roles:
-            # Use the first role for our partner
-            signers.append({
-                'partner_id': self.partner_id.id,
-                'role_id': roles[0].id,
-                'mail_sent_order': 1,
-            })
+        _logger.info(f'Plantilla seleccionada: {sign_template.display_name} (ID: {sign_template.id})')
+        first_item_with_role = next((item for item in sign_template.item_ids if item.role_id), None)
+        if not first_item_with_role:
+            _logger.error('No se encontró ningún rol en los items de la plantilla')
+            raise UserError(_('No se pudo determinar el rol de firma en la plantilla. Por favor, configure la plantilla correctamente.'))
+        signer_role = first_item_with_role.role_id
+        _logger.info(f'Rol seleccionado: {signer_role.name} (ID: {signer_role.id})')
+        if not sign_template.data:
+            _logger.error('La plantilla no tiene PDF adjunto (campo data vacío)')
         else:
-            # Use default role if no roles defined
-            default_role = self.env.ref('sign.sign_item_role_default', raise_if_not_found=False)
-            if default_role:
-                signers.append({
-                    'partner_id': self.partner_id.id,
-                    'role_id': default_role.id,
-                    'mail_sent_order': 1,
-                })
-
-        if not signers:
-            raise UserError(_('No se pudo determinar el rol de firma. Por favor, configure la plantilla correctamente.'))
-
-        # Create the sign request with request_item_ids
-        sign_request = self.env['sign.request'].create({
+            _logger.info(f'La plantilla tiene PDF adjunto (bytes: {len(sign_template.data)})')
+        vals = {
             'template_id': sign_template.id,
-            'request_item_ids': [Command.create({
-                'partner_id': signer['partner_id'],
-                'role_id': signer['role_id'],
-                'mail_sent_order': signer['mail_sent_order'],
-            }) for signer in signers],
-            'reference': sign_template.display_name,
-            'subject': _("Solicitud de Firma - %s", sign_template.attachment_id.name or sign_template.display_name),
-        })
-
-        # Open the signable document directly for the partner to sign
-        return sign_request.go_to_signable_document(sign_request.request_item_ids)
+            'signer_ids': [Command.create({
+                'partner_id': self.partner_id.id,
+                'role_id': signer_role.id,
+            })],
+            'name': sign_template.name,
+            'filename': sign_template.filename,
+            'data': sign_template.data,  # CLAVE: pasar el PDF
+            'signatory_data': sign_template._get_signatory_data(),  # CLAVE: poblar campos de firma
+        }
+        sign_request = self.env['sign.oca.request'].create(vals)
+        _logger.warning(f'signatory_data generado: {sign_request.signatory_data}')
+        signer = sign_request.signer_ids and sign_request.signer_ids[0] or False
+        if not signer:
+            _logger.error('No se pudo crear el firmante')
+            raise UserError(_('No se pudo crear el firmante.'))
+        signer._portal_ensure_token()
+        sign_request.action_send(sign_now=True)
+        return {
+            'type': 'ir.actions.act_url',
+            'url': signer.access_url,
+            'target': 'new',
+        }
