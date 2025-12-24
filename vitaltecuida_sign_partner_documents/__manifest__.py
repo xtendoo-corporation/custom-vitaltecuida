@@ -20,13 +20,9 @@
         'views/sign_template_wizard_views.xml',
         'views/sign_template_wizard_no_email_views.xml',
         'views/res_partner_views.xml',
+        'templates/portal_sign_document_signed.xml',
     ],
     'installable': True,
     'auto_install': False,
     'application': False,
-    'assets': {
-        'web.assets_frontend': [
-            'vitaltecuida_sign_partner_documents/static/src/js/sign_oca_override.js',
-        ],
-    },
 }

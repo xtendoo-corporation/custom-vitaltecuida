@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="portal_sign_document_signed" inherit_id="sign_oca.portal_sign_document_signed" priority="20">
+        <xpath expr="//div[@class='card-body']" position="replace">
+            <div class="card-body">
+                <t t-if="signer.request_id.state == '2_signed'">
+                    <t t-if="signer.partner_id.email and not no_email_thanks">
+                        You should have received an email with the final document.<br/>
+                        Check on your mailbox.
+                    </t>
+                    <t t-else="">
+                        El documento ha sido firmado correctamente.
+                    </t>
+                </t>
+                <t t-elif="signer.request_id.state == '3_cancel'">
+                    The document has been cancelled
+                </t>
+                <t t-else="">
+                    As soon as all signers have signed the document, you will receive an email with the full document
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+
