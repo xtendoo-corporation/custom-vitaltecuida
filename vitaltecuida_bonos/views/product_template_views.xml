@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_only_form_view_bonos" model="ir.ui.view">
+        <field name="name">product.template.only.form.bonos</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_create_bono_wizard"
+                        type="object"
+                        string="Crear bono"
+                        class="btn-primary"
+                        invisible="is_bono"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_bono_balances"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-ticket"
+                        invisible="not is_bono">
+                    <field name="bono_balance_count" widget="statinfo" string="Clientes con bono"/>
+                </button>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="after">
+                <widget name="web_ribbon" title="Bono" bg_color="text-bg-success" invisible="not is_bono"/>
+            </xpath>
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="is_bono" invisible="1"/>
+                <label for="n_uses" invisible="not is_bono"/>
+                <div class="o_row" invisible="not is_bono">
+                    <field name="is_bono" readonly="1" class="oe_inline"/>
+                    <span class="ms-2 me-2 text-muted">·</span>
+                    <field name="n_uses" readonly="0" class="oe_inline"/>
+                    <span class="ms-2 text-muted">usos por bono</span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_bonos" model="ir.ui.view">
+        <field name="name">product.template.search.bonos</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/separator[last()]" position="before">
+                <filter string="Bonos" name="bonos" domain="[('is_bono', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

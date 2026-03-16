@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_vitaltecuida_bono_create_wizard_form" model="ir.ui.view">
+        <field name="name">vitaltecuida.bono.create.wizard.form</field>
+        <field name="model">vitaltecuida.bono.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Crear bono" class="o_vitaltecuida_bono_create_wizard">
+                <sheet>
+                    <div class="mb-3">
+                        <div class="h4 fw-semibold mb-2">Configura el nuevo bono</div>
+                        <div class="alert alert-info mb-3" role="alert">
+                            Se creará un producto de tipo bono listo para vender y consumir desde el TPV.
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group>
+                            <field name="source_product_tmpl_id" readonly="1"/>
+                            <field name="name" placeholder="Ej. Bono 10 sesiones"/>
+                        </group>
+                        <group>
+                            <field name="list_price"/>
+                            <field name="n_uses"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Cancelar" special="cancel" class="btn-secondary btn-lg"/>
+                    <button name="action_create_bono" type="object" string="Crear bono" class="btn-primary btn-lg"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

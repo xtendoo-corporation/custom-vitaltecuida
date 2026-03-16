@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vitaltecuida_bono_balance_user,vitaltecuida.bono.balance user,model_vitaltecuida_bono_balance,base.group_user,1,1,1,1
+access_vitaltecuida_bono_move_user,vitaltecuida.bono.move user,model_vitaltecuida_bono_move,base.group_user,1,0,1,0
+access_vitaltecuida_bono_create_wizard_user,vitaltecuida.bono.create.wizard user,model_vitaltecuida_bono_create_wizard,base.group_user,1,1,1,1
+

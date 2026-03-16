@@ -1,0 +1,31 @@
+.o_vitaltecuida_bono_create_wizard {
+    .o_form_sheet {
+        max-width: 920px;
+        padding: 1.5rem 2rem;
+    }
+
+    .alert {
+        font-size: 1.05rem;
+        line-height: 1.5;
+        padding: 1rem 1.25rem;
+    }
+
+    .o_form_label,
+    .o_td_label .o_form_label {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .o_field_widget input,
+    .o-autocomplete--input,
+    .o_input {
+        font-size: 1.05rem;
+        min-height: 2.75rem;
+    }
+
+    .btn {
+        font-size: 1rem;
+        padding: 0.625rem 1.25rem;
+    }
+}
+

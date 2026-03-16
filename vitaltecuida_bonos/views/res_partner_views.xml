@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_vitaltecuida_bonos" model="ir.ui.view">
+        <field name="name">res.partner.form.vitaltecuida.bonos</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_bono_balances"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-ticket">
+                    <field name="bono_balance_count" widget="statinfo" string="Bonos"/>
+                </button>
+            </div>
+            <xpath expr="//notebook" position="inside">
+                <page string="Bonos">
+                    <field name="bono_balance_ids" readonly="1">
+                        <list string="Bonos">
+                            <field name="product_id"/>
+                            <field name="total_uses"/>
+                            <field name="remaining_uses"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+
