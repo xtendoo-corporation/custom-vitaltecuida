@@ -16,7 +16,6 @@
         "views/bono_balance_views.xml",
         "views/product_template_views.xml",
         "views/res_partner_views.xml",
-        "wizards/bono_create_wizard_views.xml",
     ],
     "assets": {
         "web.assets_backend": [

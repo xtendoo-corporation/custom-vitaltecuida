@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    is_bono = fields.Boolean(string="Es bono", copy=False)
+    is_bono = fields.Boolean(string="Bono", copy=False)
     n_uses = fields.Integer(string="Número de usos", default=1)
     bono_balance_count = fields.Integer(
         string="Clientes con bono",
@@ -26,19 +26,6 @@ class ProductTemplate(models.Model):
         for product in self:
             if product.is_bono and product.n_uses <= 0:
                 raise ValidationError(_("El número de usos del bono debe ser mayor que 0."))
-
-    def action_open_create_bono_wizard(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Crear bono"),
-            "res_model": "vitaltecuida.bono.create.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_source_product_tmpl_id": self.id,
-            },
-        }
 
     def action_view_bono_balances(self):
         self.ensure_one()
