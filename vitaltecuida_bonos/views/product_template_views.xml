@@ -29,7 +29,6 @@
                 <label for="n_uses" invisible="not is_bono"/>
                 <div class="o_row" invisible="not is_bono">
                     <field name="is_bono" readonly="1" class="oe_inline"/>
-                    <span class="ms-2 me-2 text-muted">·</span>
                     <field name="n_uses" readonly="0" class="oe_inline"/>
                     <span class="ms-2 text-muted">usos por bono</span>
                 </div>

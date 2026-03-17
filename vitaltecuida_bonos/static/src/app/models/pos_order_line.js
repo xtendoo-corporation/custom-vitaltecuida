@@ -87,7 +87,13 @@ function updateRedemptionCustomerNote(line) {
 }
 
 function updatePurchaseCustomerNote(line) {
-    line.customer_note = getPurchaseBonoNote(line, getPurchaseBaseNote(line.customer_note));
+    if (hasPurchaseUsesSummary(line.customer_note)) {
+        return;
+    }
+    const usageInfo = getPurchaseBonoUsageInfo(line);
+    line.customer_note = usageInfo
+        ? getPurchaseBonoNote(line, getPurchaseBaseNote(line.customer_note))
+        : getPurchaseBaseNote(line.customer_note);
 }
 
 function getRedemptionBonoUsageInfo(line) {
@@ -114,8 +120,19 @@ function getRedemptionBonoUsageInfo(line) {
     };
 }
 
+function canResolvePurchaseBonoUsage(line) {
+    return Boolean(
+        line.product_id?.id &&
+            getPartnerId(line) &&
+            line.models["vitaltecuida.bono.balance"]
+    );
+}
+
 function getPurchaseBonoUsageInfo(line) {
     if (line.is_bono_redemption || !line.product_id?.is_bono || Number(line.qty || 0) <= 0) {
+        return null;
+    }
+    if (!canResolvePurchaseBonoUsage(line)) {
         return null;
     }
     const orderLines = line.order_id?.lines || [];
