@@ -17,6 +17,41 @@ class TestVitaltecuidaBonoBalance(TransactionCase):
         self.product = self.product_tmpl.product_variant_id
         self.balance_model = self.env["vitaltecuida.bono.balance"]
 
+    def test_template_create_and_write_force_service_type_when_bono(self):
+        template = self.env["product.template"].create({
+            "name": "Producto bono desde template",
+            "type": "consu",
+            "sale_ok": True,
+            "purchase_ok": False,
+            "available_in_pos": True,
+            "is_bono": True,
+            "n_uses": 3,
+            "list_price": 30,
+        })
+        self.assertEqual(template.type, "service")
+
+        template.write({"type": "consu", "is_bono": True})
+        self.assertEqual(template.type, "service")
+
+    def test_product_write_force_service_type_when_bono(self):
+        template = self.env["product.template"].create({
+            "name": "Producto normal",
+            "type": "consu",
+            "sale_ok": True,
+            "purchase_ok": False,
+            "available_in_pos": True,
+            "is_bono": False,
+            "n_uses": 1,
+            "list_price": 20,
+        })
+        product = template.product_variant_id
+
+        product.write({"type": "consu", "is_bono": True})
+
+        self.assertTrue(product.is_bono)
+        self.assertEqual(product.type, "service")
+        self.assertEqual(template.type, "service")
+
     def test_balance_accumulates_by_partner_and_product(self):
         balance = self.balance_model.get_or_create_balance(self.partner, self.product)
         balance.add_uses(5)

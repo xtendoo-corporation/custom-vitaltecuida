@@ -12,6 +12,27 @@ class ProductTemplate(models.Model):
         compute="_compute_bono_balance_count",
     )
 
+    @staticmethod
+    def _force_service_type_on_vals(vals):
+        if vals.get("is_bono"):
+            vals["type"] = "service"
+        return vals
+
+    @api.onchange("is_bono")
+    def _onchange_is_bono_force_service_type(self):
+        for product in self:
+            if product.is_bono:
+                product.type = "service"
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        vals_list = [self._force_service_type_on_vals(dict(vals)) for vals in vals_list]
+        return super().create(vals_list)
+
+    def write(self, vals):
+        vals = self._force_service_type_on_vals(dict(vals))
+        return super().write(vals)
+
     @api.depends("product_variant_ids")
     def _compute_bono_balance_count(self):
         balance_model = self.env["vitaltecuida.bono.balance"]
