@@ -11,8 +11,8 @@
                         <field name="report_type"/>
                     </group>
                     <group>
-                        <field name="date_from"/>
-                        <field name="date_to"/>
+                        <field name="date_from" required="report_type in ['monthly', 'annual']"/>
+                        <field name="date_to" required="report_type in ['monthly', 'annual']"/>
                     </group>
                 </group>
                 <footer>
@@ -37,4 +37,3 @@
         <field name="binding_view_types">list,form</field>
     </record>
 </odoo>
-

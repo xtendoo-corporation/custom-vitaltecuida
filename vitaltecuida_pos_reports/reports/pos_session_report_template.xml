@@ -44,7 +44,12 @@
 
                         <!-- Encabezado del informe -->
                         <div class="text-center mb-4">
-                            <h2>Informe Detallado de Sesiones POS</h2>
+                            <h2>
+                                <t t-if="data['report_type'] == 'detailed'">Informe Detallado de Sesiones POS</t>
+                                <t t-if="data['report_type'] == 'summary'">Informe Resumido de Sesiones POS</t>
+                                <t t-if="data['report_type'] == 'monthly'">Informe Mensual de Sesiones POS</t>
+                                <t t-if="data['report_type'] == 'annual'">Informe Anual de Sesiones POS</t>
+                            </h2>
                             <div t-if="data['date_from'] or data['date_to']">
                                 <p>
                                     <t t-if="data['date_from']">
@@ -127,7 +132,105 @@
                         </div>
 
                         <!-- Detalle por Sesión -->
-                        <t t-foreach="data['sessions_data']" t-as="session_data">
+                        <t t-if="data['report_type'] == 'monthly'">
+                            <div class="mt-4">
+                                <h3 class="mb-3">Informe mensual - Totales por día</h3>
+                                <table class="table table-sm table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Día</th>
+                                            <th class="text-right">Pedidos</th>
+                                            <th class="text-right">Base Imponible</th>
+                                            <th class="text-right">Impuestos</th>
+                                            <th class="text-right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="data['monthly_totals']" t-as="period">
+                                            <td><span t-out="period['label']"/></td>
+                                            <td class="text-right"><span t-out="period['total_orders']"/></td>
+                                            <td class="text-right">
+                                                <span t-out="period['total_base']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-out="period['total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <strong>
+                                                    <span t-out="period['total_amount']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-info">
+                                            <th>Total mes</th>
+                                            <th class="text-right"><span t-out="data['grand_total_orders']"/></th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total'] - data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </t>
+
+                        <t t-if="data['report_type'] == 'annual'">
+                            <div class="mt-4">
+                                <h3 class="mb-3">Informe anual - Totales por mes</h3>
+                                <table class="table table-sm table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mes</th>
+                                            <th class="text-right">Pedidos</th>
+                                            <th class="text-right">Base Imponible</th>
+                                            <th class="text-right">Impuestos</th>
+                                            <th class="text-right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="data['annual_totals']" t-as="period">
+                                            <td><span t-out="period['label']"/></td>
+                                            <td class="text-right"><span t-out="period['total_orders']"/></td>
+                                            <td class="text-right">
+                                                <span t-out="period['total_base']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-out="period['total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <strong>
+                                                    <span t-out="period['total_amount']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-info">
+                                            <th>Total anual</th>
+                                            <th class="text-right"><span t-out="data['grand_total_orders']"/></th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total'] - data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total_tax']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                            <th class="text-right">
+                                                <span t-out="data['grand_total']" t-options="{'widget': 'monetary', 'display_currency': o.session_ids[0].currency_id}"/>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </t>
+
+                        <t t-if="data['report_type'] in ['detailed', 'summary']" t-foreach="data['sessions_data']" t-as="session_data">
                             <div class="page-break">
                                 <h3 class="mt-4 mb-3">
                                     Sesión: <span t-out="session_data['session'].name"/>
@@ -297,4 +400,3 @@
         </t>
     </template>
 </odoo>
-

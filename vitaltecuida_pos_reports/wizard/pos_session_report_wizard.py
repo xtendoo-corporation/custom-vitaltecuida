@@ -3,6 +3,8 @@
 
 from odoo import api, fields, models
 from collections import defaultdict
+from datetime import date
+from odoo.exceptions import UserError
 
 
 class PosSessionReportWizard(models.TransientModel):
@@ -29,6 +31,8 @@ class PosSessionReportWizard(models.TransientModel):
     report_type = fields.Selection([
         ('detailed', 'Detallado (por ticket)'),
         ('summary', 'Resumen'),
+        ('monthly', 'Informe mensual'),
+        ('annual', 'Informe anual'),
     ], string='Tipo de Informe', default='detailed', required=True)
 
     @api.model
@@ -42,7 +46,66 @@ class PosSessionReportWizard(models.TransientModel):
     def action_print_report(self):
         """Imprimir el informe PDF"""
         self.ensure_one()
+        self._check_period_dates()
         return self.env.ref('vitaltecuida_pos_reports.action_report_pos_session_detailed').report_action(self)
+
+    def _check_period_dates(self):
+        if self.report_type not in ['monthly', 'annual']:
+            return
+
+        if not self.date_from or not self.date_to:
+            if self.report_type == 'monthly':
+                raise UserError('Para el informe mensual debe establecer la fecha desde y hasta del mes.')
+            raise UserError('Para el informe anual debe establecer la fecha desde y hasta del año.')
+
+        date_from = fields.Datetime.context_timestamp(self, self.date_from).date()
+        date_to = fields.Datetime.context_timestamp(self, self.date_to).date()
+
+        if date_from > date_to:
+            raise UserError('La fecha desde no puede ser posterior a la fecha hasta.')
+
+        if self.report_type == 'monthly' and (date_from.year != date_to.year or date_from.month != date_to.month):
+            raise UserError('El informe mensual debe tener fechas dentro del mismo mes.')
+
+        if self.report_type == 'annual' and date_from.year != date_to.year:
+            raise UserError('El informe anual debe tener fechas dentro del mismo año.')
+
+    def _get_period_key(self, order, period):
+        order_date = fields.Datetime.context_timestamp(self, order.date_order).date()
+        if period == 'day':
+            return order_date, fields.Date.to_string(order_date)
+        if period == 'month':
+            month_date = date(order_date.year, order_date.month, 1)
+            return month_date, month_date.strftime('%m/%Y')
+        return order_date, fields.Date.to_string(order_date)
+
+    def _get_period_totals(self, orders, period):
+        period_totals = defaultdict(lambda: {
+            'label': '',
+            'total_orders': 0,
+            'total_amount': 0.0,
+            'total_tax': 0.0,
+            'total_base': 0.0,
+        })
+        for order in orders:
+            period_key, label = self._get_period_key(order, period)
+            totals = period_totals[period_key]
+            totals['label'] = label
+            totals['total_orders'] += 1
+            totals['total_amount'] += order.amount_total
+            totals['total_tax'] += order.amount_tax
+            totals['total_base'] += order.amount_total - order.amount_tax
+
+        return [
+            {
+                'label': values['label'],
+                'total_orders': values['total_orders'],
+                'total_base': values['total_base'],
+                'total_tax': values['total_tax'],
+                'total_amount': values['total_amount'],
+            }
+            for period_key, values in sorted(period_totals.items())
+        ]
 
     def _get_report_data(self):
         """Preparar los datos para el informe"""
@@ -61,6 +124,8 @@ class PosSessionReportWizard(models.TransientModel):
 
         # Obtener todos los pedidos
         orders = self.env['pos.order'].search(domain, order='date_order asc')
+        monthly_totals = self._get_period_totals(orders, 'day')
+        annual_totals = self._get_period_totals(orders, 'month')
 
         # Agrupar por sesión
         sessions_data = []
@@ -160,8 +225,9 @@ class PosSessionReportWizard(models.TransientModel):
             'grand_total_orders': grand_total_orders,
             'grand_payment_summary': dict(grand_payment_summary),
             'grand_tax_summary': dict(grand_tax_summary),
+            'monthly_totals': monthly_totals,
+            'annual_totals': annual_totals,
             'date_from': self.date_from,
             'date_to': self.date_to,
             'report_type': self.report_type,
         }
-
